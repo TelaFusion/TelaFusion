@@ -1,39 +1,177 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TelaFusion | Filmes e Séries</title>
-<style>
-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 25vh; /* altura total da tela */
-    margin: 0;
-    background-image: url('imagens/images.jpeg');
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-color: #000;
-    color: red;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    image-rendering: auto;
-    position: relative; /* Necessário para o ::before funcionar */
-}
-
-h1, p {
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
-    position: relative;
-    z-index: 1; /* Mantém o texto acima do overlay */
-}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tela Fusion • Filmes e Trailers</title>
+  <meta name="description" content="Tela Fusion — descubra e salve seus filmes favoritos" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin:0;
+      font-family:'Poppins', sans-serif;
+      background:#111;
+      color:#fff;
+    }
+    .header {
+      background:#000;
+      padding:1rem;
+      text-align:center;
+      font-size:1.4rem;
+      font-weight:600;
+      letter-spacing:1px;
+    }
+    .hero {
+      background:linear-gradient(to bottom,rgba(0,0,0,0.6),rgba(0,0,0,0.9)),
+      url("https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?q=80&w=1400") center/cover no-repeat;
+      padding:5rem 2rem;
+      text-align:center;
+    }
+    .hero h1 { font-size:2.5rem; margin-bottom:1rem; }
+    .section-title { font-size:1.5rem; font-weight:600; margin:2rem 1rem 1rem; }
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+      gap:1rem;
+      padding:1rem;
+    }
+    .card {
+      background:#222;
+      border-radius:10px;
+      overflow:hidden;
+      cursor:pointer;
+      transition:transform .2s;
+    }
+    .card:hover { transform:scale(1.05); }
+    .card img { width:100%; display:block; }
+    .card h3 { font-size:1rem; margin:.5rem; }
+    .card p { font-size:.85rem; margin:0 .5rem 1rem; color:#bbb; }
+    dialog.modal {
+      border:none;
+      border-radius:10px;
+      padding:1rem;
+      max-width:600px;
+      width:90%;
+    }
+    dialog::backdrop { background:rgba(0,0,0,.8); }
+    .modal-content iframe { width:100%; height:300px; border:none; margin-bottom:1rem; }
+    .btn { background:#e50914; color:#fff; border:none; padding:.6rem 1rem; border-radius:6px; cursor:pointer; }
+    footer { text-align:center; padding:2rem 1rem; background:#000; margin-top:2rem; }
+  </style>
 </head>
 <body>
-<h1>Tela Fusion</h1>
-<p>Bem-vindo ao Tela Fusion</p>
+  <!-- HEADER -->
+  <header class="header">
+    🎬 Tela Fusion
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Descubra os melhores filmes</h1>
+    <p>Assista trailers, conheça detalhes e adicione aos seus favoritos.</p>
+  </section>
+
+  <!-- MAIS VISTOS DO MUNDO -->
+  <h2 class="section-title">Mais Vistos do Mundo</h2>
+  <section class="grid" id="grid-top" aria-live="polite"></section>
+
+  <!-- CATÁLOGO GERAL -->
+  <h2 class="section-title">Catálogo Geral</h2>
+  <main class="grid" id="grid" aria-live="polite"></main>
+
+  <!-- MODAL -->
+  <dialog class="modal" id="modal">
+    <div class="modal-content">
+      <h2 id="modal-title"></h2>
+      <iframe id="modal-trailer" src="" allowfullscreen></iframe>
+      <p id="modal-overview"></p>
+      <p><strong>Duração:</strong> <span id="modal-minutes"></span> min</p>
+      <p><strong>Gêneros:</strong> <span id="modal-genres"></span></p>
+      <button class="btn" id="fav-btn">⭐ Favoritar</button>
+      <button class="btn" id="close-btn">Fechar</button>
+    </div>
+  </dialog>
+
+  <!-- FOOTER -->
+  <footer>
+    © 2025 Tela Fusion. Todos os direitos reservados.
+  </footer>
+
+  <script>
+    const TOP_MOVIES = [
+      { id:101, title:"Avatar", year:2009, poster:"https://m.media-amazon.com/images/I/41kTVLeW1CL._AC_.jpg", genres:["Ficção Científica","Aventura"], rating:7.8, minutes:162, trailer:"https://www.youtube.com/embed/5PSNL1qE6VY", overview:"No exuberante mundo de Pandora, Jake Sully se envolve em uma batalha pela sobrevivência dos Na'vi." },
+      { id:102, title:"Vingadores: Ultimato", year:2019, poster:"https://m.media-amazon.com/images/I/81ExhpBEbHL._AC_SL1500_.jpg", genres:["Ação","Heróis"], rating:8.4, minutes:181, trailer:"https://www.youtube.com/embed/TcMBFSGVi1c", overview:"Os Vingadores restantes unem forças para reverter o estalo de Thanos e restaurar o universo." },
+      { id:103, title:"Titanic", year:1997, poster:"https://m.media-amazon.com/images/I/71rNJQ2g-EL._AC_SY679_.jpg", genres:["Drama","Romance"], rating:7.9, minutes:195, trailer:"https://www.youtube.com/embed/kVrqfYjkTdQ", overview:"Um romance floresce a bordo do navio mais famoso da história, em meio a uma tragédia." },
+      { id:104, title:"Star Wars: O Despertar da Força", year:2015, poster:"https://m.media-amazon.com/images/I/91KkWf50SoL._AC_SL1500_.jpg", genres:["Ficção Científica","Aventura"], rating:7.8, minutes:138, trailer:"https://www.youtube.com/embed/sGbxmsDFVnE", overview:"Uma nova geração de heróis se levanta contra a Primeira Ordem para restaurar a paz na galáxia." },
+      ];
+
+    // FUNÇÃO RENDERIZAR
+    function renderMovies(list, containerId){
+      const container = document.getElementById(containerId);
+      container.innerHTML = list.map(m => `
+        <article class="card" data-id="${m.id}">
+          <img src="${m.poster}" alt="Poster de ${m.title}">
+          <h3>${m.title}</h3>
+          <p>${m.year} • ⭐ ${m.rating}</p>
+        </article>`).join("");
+    }
+
+    renderMovies(TOP_MOVIES,"grid-top");
+    renderMovies(MOVIES,"grid");
+
+    // MODAL
+    const modal = document.getElementById("modal");
+    const modalTitle = document.getElementById("modal-title");
+    const modalTrailer = document.getElementById("modal-trailer");
+    const modalOverview = document.getElementById("modal-overview");
+    const modalMinutes = document.getElementById("modal-minutes");
+    const modalGenres = document.getElementById("modal-genres");
+    const favBtn = document.getElementById("fav-btn");
+    const closeBtn = document.getElementById("close-btn");
+
+    let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+
+    function openModal(id){
+      const all = [...TOP_MOVIES,...MOVIES];
+      const movie = all.find(m => m.id==id);
+      if(!movie) return;
+
+      modalTitle.textContent = movie.title;
+      modalTrailer.src = movie.trailer;
+      modalOverview.textContent = movie.overview;
+      modalMinutes.textContent = movie.minutes;
+      modalGenres.textContent = movie.genres.join(", ");
+
+      favBtn.onclick = () => toggleFavorite(movie);
+      modal.showModal();
+    }
+
+    function closeModal(){
+      modal.close();
+      modalTrailer.src = ""; // parar trailer
+    }
+
+    function toggleFavorite(movie){
+      if(favorites.some(f => f.id===movie.id)){
+        favorites = favorites.filter(f => f.id!==movie.id);
+        alert(movie.title+" removido dos favoritos!");
+      } else {
+        favorites.push(movie);
+        alert(movie.title+" adicionado aos favoritos!");
+      }
+      localStorage.setItem("favorites",JSON.stringify(favorites));
+    }
+
+    document.addEventListener("click", e=>{
+      const card = e.target.closest(".card");
+      if(card){
+        openModal(card.dataset.id);
+      }
+    });
+
+    closeBtn.addEventListener("click", closeModal);
+  </script>
 </body>
 </html>
